@@ -50,5 +50,10 @@
 - Multiplayer
 - Procedural Generation
 
+## Issues
+- glitching while walking (multiple idle animation)
+# Contributors
+
+
 
 
