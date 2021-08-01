@@ -1,5 +1,4 @@
 import 'package:flame/game.dart';
-import 'package:flame/gestures.dart';
 import 'package:flame/keyboard.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
@@ -13,19 +12,15 @@ class XavisAdventure extends BaseGame with KeyboardEvents {
 
   @override
   Future<void> onLoad() async {
+    // create background
     final backgroundSprite = await Sprite.load('bg_game.png');
     final backgroundBorderSprite = await Sprite.load('bg_game_border.png');
     background = BackgroundLayer(backgroundSprite, backgroundBorderSprite);
 
-    final playerSize = Vector2.all(50.0);
+    // create player
     final initialPlayerPosition = Vector2(125, 275);
-    final playerSprite = await Sprite.load('player/player_dryer.png');
 
-    player = PlayerComponent(
-      position: initialPlayerPosition,
-      size: playerSize,
-      sprite: playerSprite,
-    );
+    player = PlayerComponent(position: initialPlayerPosition);
 
     add(player);
   }
@@ -33,7 +28,7 @@ class XavisAdventure extends BaseGame with KeyboardEvents {
   @override
   void render(Canvas canvas) {
     background.render(canvas);
-    player.render(canvas);
+    super.render(canvas);
   }
 
   @override
