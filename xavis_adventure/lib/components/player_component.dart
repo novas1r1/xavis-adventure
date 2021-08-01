@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
+import 'package:xavis_adventure/components/enemy_flame_component.dart';
 
 enum MoveDirection {
   right,
@@ -8,16 +11,17 @@ enum MoveDirection {
   down,
 }
 
-enum MovingState {
+enum PlayerState {
   idle,
   idleLeft,
   idleRight,
   idleUp,
   idleDown,
-  left,
-  right,
-  up,
-  down,
+  walkLeft,
+  walkRight,
+  walkUp,
+  walkDown,
+  die,
 }
 
 const _moving_animation_step_time = 0.1;
@@ -27,28 +31,27 @@ const _moving_duration_per_step_ms = 500;
 
 class PlayerComponent extends SpriteAnimationGroupComponent
     with Hitbox, Collidable {
-  final Vector2 position;
+  Vector2 _initialPlayerPosition = Vector2(125, 275);
+  final respawnTimer = Timer(2);
 
-  PlayerComponent({
-    required this.position,
-  }) : super(
-          position: position,
-          animations: {}, // requires initial set, can be empty and set later as well
-        ) {
+  // requires initial set, can be empty and set later as well
+  PlayerComponent() : super(animations: {}) {
     anchor = Anchor.center;
   }
 
   bool get _isMoving => ![
-        MovingState.idle,
-        MovingState.idleDown,
-        MovingState.idleLeft,
-        MovingState.idleRight,
-        MovingState.idleUp
+        PlayerState.idle,
+        PlayerState.idleDown,
+        PlayerState.idleLeft,
+        PlayerState.idleRight,
+        PlayerState.idleUp,
+        PlayerState.die,
       ].contains(current);
 
   @override
   Future<void>? onLoad() async {
     size = Vector2.all(50.0);
+    position = _initialPlayerPosition;
     await _loadMovingAnimation();
 
     addShape(HitboxRectangle());
@@ -58,29 +61,35 @@ class PlayerComponent extends SpriteAnimationGroupComponent
 
   Future<void> _loadMovingAnimation() async {
     final idleAnimation = await _loadIdleAnimation();
-
-    final rightAnimation = await _loadRightAnimation();
     final idleRightAnimation = await _loadIdleRightAnimation();
-    final leftAnimation = await _loadLeftAnimation();
     final idleLeftAnimation = await _loadIdleLeftAnimation();
-    final downAnimation = await _loadDownAnimation();
     final idleDownAnimation = await _loadIdleDownAnimation();
-    final upAnimation = await _loadUpAnimation();
     final idleUpAnimation = await _loadIdleUpAnimation();
 
+    final rightAnimation = await _loadRightAnimation();
+    final leftAnimation = await _loadLeftAnimation();
+    final downAnimation = await _loadDownAnimation();
+    final upAnimation = await _loadUpAnimation();
+
+    final dieAnimation = await _loadDieAnimation();
+
     animations = {
-      MovingState.idle: idleAnimation,
-      MovingState.right: rightAnimation,
-      MovingState.idleRight: idleRightAnimation,
-      MovingState.left: leftAnimation,
-      MovingState.idleLeft: idleLeftAnimation,
-      MovingState.down: downAnimation,
-      MovingState.idleDown: idleDownAnimation,
-      MovingState.up: upAnimation,
-      MovingState.idleUp: idleUpAnimation,
+      // idle
+      PlayerState.idle: idleAnimation,
+      PlayerState.idleRight: idleRightAnimation,
+      PlayerState.idleLeft: idleLeftAnimation,
+      PlayerState.idleDown: idleDownAnimation,
+      PlayerState.idleUp: idleUpAnimation,
+      // walk
+      PlayerState.walkRight: rightAnimation,
+      PlayerState.walkLeft: leftAnimation,
+      PlayerState.walkDown: downAnimation,
+      PlayerState.walkUp: upAnimation,
+      // other
+      PlayerState.die: dieAnimation,
     };
 
-    current = MovingState.idle;
+    current = PlayerState.idle;
   }
 
   void move(MoveDirection direction) {
@@ -89,22 +98,22 @@ class PlayerComponent extends SpriteAnimationGroupComponent
     }
     switch (direction) {
       case MoveDirection.right:
-        current = MovingState.right;
+        current = PlayerState.walkRight;
         final vectorStep = Vector2(_moving_distance / _moving_steps, 0);
         _move(vectorStep, MoveDirection.right);
         break;
       case MoveDirection.left:
-        current = MovingState.left;
+        current = PlayerState.walkLeft;
         final vectorStep = Vector2(-1 * (_moving_distance / _moving_steps), 0);
         _move(vectorStep, MoveDirection.left);
         break;
       case MoveDirection.up:
-        current = MovingState.up;
+        current = PlayerState.walkUp;
         final vectorStep = Vector2(0, -1 * (_moving_distance / _moving_steps));
         _move(vectorStep, MoveDirection.up);
         break;
       case MoveDirection.down:
-        current = MovingState.down;
+        current = PlayerState.walkDown;
         final vectorStep = Vector2(0, _moving_distance / _moving_steps);
         _move(vectorStep, MoveDirection.down);
         break;
@@ -122,25 +131,50 @@ class PlayerComponent extends SpriteAnimationGroupComponent
       if (step >= _moving_steps) {
         switch (direction) {
           case MoveDirection.right:
-            current = MovingState.idleRight;
+            current = PlayerState.idleRight;
             break;
           case MoveDirection.left:
-            current = MovingState.idleLeft;
+            current = PlayerState.idleLeft;
             break;
           case MoveDirection.up:
-            current = MovingState.idleUp;
+            current = PlayerState.idleUp;
             break;
           case MoveDirection.down:
-            current = MovingState.idleDown;
+            current = PlayerState.idleDown;
             break;
           default:
-            current = MovingState.idle;
+            current = PlayerState.idle;
             break;
         }
       } else {
         position += vectorStep;
       }
     });
+  }
+
+  @override
+  void update(double dt) {
+    // TODO fix: when player dies, wait for 2 seconds -> respawn
+    // Currently not working using timer
+    if (current == PlayerState.die && position != _initialPlayerPosition) {
+      respawnTimer.start();
+      if (respawnTimer.finished) {
+        position = _initialPlayerPosition;
+      }
+    }
+    super.update(dt);
+  }
+
+  @override
+  void onCollision(Set<Vector2> points, Collidable other) {
+    if (other is EnemyFlameComponent) {
+      playerDies();
+    }
+  }
+
+  void playerDies() {
+    log('PLAYER DIED');
+    current = PlayerState.die;
   }
 
   Future<SpriteAnimation> _loadIdleAnimation() async {
@@ -210,6 +244,14 @@ class PlayerComponent extends SpriteAnimationGroupComponent
 
   Future<SpriteAnimation> _loadIdleUpAnimation() async {
     final sprite = await Sprite.load('player/player_dryer_up.png');
+    return SpriteAnimation.spriteList(
+      [sprite],
+      stepTime: _moving_animation_step_time,
+    );
+  }
+
+  Future<SpriteAnimation> _loadDieAnimation() async {
+    final sprite = await Sprite.load('player/player_dead.png');
     return SpriteAnimation.spriteList(
       [sprite],
       stepTime: _moving_animation_step_time,

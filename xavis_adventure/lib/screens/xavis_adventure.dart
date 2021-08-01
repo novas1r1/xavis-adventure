@@ -23,8 +23,7 @@ class XavisAdventure extends BaseGame with KeyboardEvents, HasCollidables {
     add(ScreenCollidable());
 
     // create player
-    final initialPlayerPosition = Vector2(125, 275);
-    player = PlayerComponent(position: initialPlayerPosition);
+    player = PlayerComponent();
     add(player);
 
     // add enemies

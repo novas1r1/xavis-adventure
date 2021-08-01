@@ -11,7 +11,7 @@ enum EnemyMoveDirection {
 
 class EnemyFlameComponent extends SpriteAnimationComponent
     with Hitbox, Collidable {
-  static const double speed = 200.0;
+  static const double speed = 100.0;
 
   final Vector2 position;
   final EnemyMoveDirection moveDirection;
