@@ -25,9 +25,15 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
 
   PlayerComponent({
     required this.position,
-  }) : super(position: position, animations: {}) {
+  }) : super(
+          position: position,
+          animations: {}, // requires initial set, can be empty and set later as well
+          current: MovingState.idle,
+        ) {
     anchor = Anchor.center;
   }
+
+  bool get _isMoving => current != MovingState.idle;
 
   @override
   Future<void>? onLoad() async {
@@ -49,7 +55,6 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
       MovingState.down: downAnimation,
       MovingState.up: upAnimation,
     };
-    current = MovingState.idle;
   }
 
   Future<SpriteAnimation> _loadIdleAnimation() async {
@@ -94,6 +99,9 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
   }
 
   void move(MoveDirection direction) {
+    if (_isMoving) {
+      return;
+    }
     switch (direction) {
       case MoveDirection.right:
         current = MovingState.right;
@@ -119,8 +127,10 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
   }
 
   Future<void> _move(Vector2 vectorStep) async {
+    // calculate ms for each step
     final stepDurationMs = _moving_duration_per_step_ms ~/ _moving_steps;
 
+    // per step, move the player
     Stream.periodic(Duration(milliseconds: stepDurationMs), (v) => v + 1)
         .take(_moving_steps)
         .listen((step) {
