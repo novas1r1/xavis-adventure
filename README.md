@@ -1,4 +1,13 @@
 # xavis-adventure
+This is a community project created on my [Twitch channel](https://twitch.tv/novas1r1). Please feel free to contribute to the project, join the stream, fix bugs, add features... whatever you want :)! I'm doing this as a learning project for getting to know [Flame-Engine](https://flame-engine.org/) a little bit better. Go check them out!
+
+## Contributors
+Thanks to the Flame team for answering questions and providing this cool engine <3!
+Thanks to my sister for the graphics <3!
+Thanks to the contributors and stream attendees <3!
+@dumazy (https://github.com/dumazy)
+
+# TODO
 ## General
 - Moving through all the screens
 ## Screens
@@ -51,9 +60,7 @@
 - Procedural Generation
 
 ## Issues
-- glitching while walking (multiple idle animation)
-# Contributors
-
+- glitching while walking
 
 
 
