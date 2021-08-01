@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/geometry.dart';
 
 enum MoveDirection {
   right,
@@ -24,7 +25,8 @@ const _moving_distance = 50.0;
 const _moving_steps = 10;
 const _moving_duration_per_step_ms = 500;
 
-class PlayerComponent extends SpriteAnimationGroupComponent {
+class PlayerComponent extends SpriteAnimationGroupComponent
+    with Hitbox, Collidable {
   final Vector2 position;
 
   PlayerComponent({
@@ -48,6 +50,9 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
   Future<void>? onLoad() async {
     size = Vector2.all(50.0);
     await _loadMovingAnimation();
+
+    addShape(HitboxRectangle());
+
     return super.onLoad();
   }
 
