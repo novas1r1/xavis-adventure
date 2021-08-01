@@ -28,7 +28,6 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
   }) : super(
           position: position,
           animations: {}, // requires initial set, can be empty and set later as well
-          current: MovingState.idle,
         ) {
     anchor = Anchor.center;
   }
@@ -55,6 +54,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent {
       MovingState.down: downAnimation,
       MovingState.up: upAnimation,
     };
+    current = MovingState.idle;
   }
 
   Future<SpriteAnimation> _loadIdleAnimation() async {
