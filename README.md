@@ -1,11 +1,13 @@
-# xavis-adventure
+# Welcome to Xavis Adventure
 This is a community project created on my [Twitch channel](https://twitch.tv/novas1r1). Please feel free to contribute to the project, join the stream, fix bugs, add features... whatever you want :)! I'm doing this as a learning project for getting to know [Flame-Engine](https://flame-engine.org/) a little bit better. Go check them out!
 
+The game is based of a game I created in university together with my sister in 2012 using Microsoft XNA. It's called "XAVIS ADVENTURE" because of the main character called Xavi. It's inspired by bomberman and similiar 2D games.
+
 ## Contributors
-Thanks to the Flame team for answering questions and providing this cool engine <3!
-Thanks to my sister for the graphics <3!
-Thanks to the contributors and stream attendees <3!
-@dumazy (https://github.com/dumazy)
+- Thanks to the Flame team for answering questions and providing this cool engine <3!
+- Thanks to my sister for the graphics <3!
+- Thanks to the contributors and stream attendees <3!
+    - @dumazy (https://github.com/dumazy)
 
 # TODO
 ## General
