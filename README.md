@@ -28,6 +28,7 @@
     - shooting with space
     - collision detection with walls
 #### 2. Step
+- player: set moving area
 - enemies
     - collision detection with walls
     - collision detection with player
@@ -38,6 +39,7 @@
 
 ## Prepare
 - using Tiled map (https://thorbjorn.itch.io/tiled)
+- player: set moving area
 
 ## Questions
 - Web or Mobile first?

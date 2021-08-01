@@ -1,20 +1,14 @@
+import 'package:flame/flame.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:xavis_adventure/screens/game_home.dart';
+import 'package:xavis_adventure/screens/xavis_adventure.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Flame.device.fullScreen();
+  await Flame.device.setPortrait();
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: GameHome(),
-    );
-  }
+  runApp(GameWidget(
+    game: XavisAdventure(),
+  ));
 }
